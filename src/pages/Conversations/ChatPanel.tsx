@@ -3,6 +3,8 @@ import type { KeyboardEvent } from 'react'
 import { Avatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
 import { Icon } from '../../icons/Icon'
+import { Tag } from '../../components/Tag'
+import { GROUP_COLOR, GROUP_LABEL, npsGroup } from '../Nps/data'
 import type { ChatConversation, ChatMessage } from './data'
 import { ME, addLiveMessage } from './liveChats'
 
@@ -34,6 +36,21 @@ function EmojiPicker({ onSelect }: { onSelect: (emoji: string) => void }) {
 }
 
 function Message({ m }: { m: ChatMessage }) {
+  if (m.kind === 'nps') {
+    const group = npsGroup(m.score)
+    return (
+      <div className="chat-nps" role="note" aria-label={`NPS answer: ${m.score}, ${GROUP_LABEL[group]}`}>
+        <div className="chat-nps__head">
+          <Icon name="csat" size={14} />
+          <span>Visitor answered the NPS question</span>
+          <Tag color={GROUP_COLOR[group]}>NPS {m.score} · {GROUP_LABEL[group]}</Tag>
+        </div>
+        {m.reasons && m.reasons.length > 0 && <div className="chat-nps__reasons" aria-label="Reasons picked">{m.reasons.map((r) => <Tag key={r}>{r}</Tag>)}</div>}
+        {m.comment && <p className="chat-nps__comment">“{m.comment}”</p>}
+        <span className="chat-message__meta">{m.time}</span>
+      </div>
+    )
+  }
   if (m.kind === 'event') return <div className="chat-event">{m.text}</div>
   if (m.kind === 'incoming') {
     return (

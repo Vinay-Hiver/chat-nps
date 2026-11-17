@@ -1,0 +1,54 @@
+/* HOT Design System: chat inbox > CSAT. Builds on the Widget Design styles (wd-*, wp-*); colours use tokens only. */
+.cs-section { display: flex; flex-direction: column; gap: 20px; padding: 16px; border: 1px solid var(--primaryBorderLighter); border-radius: 8px; background: var(--slateSurfaceWhite); }
+.cs-option { display: inline-flex; flex-direction: column; gap: 2px; }
+.cs-option__title { font: var(--fontWeightMedium) 14px/20px var(--fontFamily); color: var(--slateTextBody); }
+.cs-option__desc { font: var(--fontWeightRegular) 12px/18px var(--fontFamily); color: var(--slateTextSubtle); }
+
+/* Survey card in the widget preview */
+.cs-card { display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 12px; background: var(--slateSurfaceSubtle); }
+.cs-card--thanks, .cs-thanks { margin: 0; font: var(--fontWeightMedium) 14px/20px var(--fontFamily); color: var(--slateTextTitle); text-align: center; }
+.cs-card__question { margin: 0; font: var(--fontWeightRegular) 14px/20px var(--fontFamily); color: var(--slateTextTitle); }
+
+.cs-faces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cs-face { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; border: 0; background: none; cursor: pointer; }
+.cs-face__emoji { display: flex; align-items: center; justify-content: center; width: 100%; height: 36px; box-sizing: border-box; border: 1px solid var(--slateBorderDark); border-radius: 8px; background: var(--slateSurfaceWhite); font-size: 16px; }
+.cs-face__label { font: var(--fontWeightRegular) 12px/18px var(--fontFamily); color: var(--slateTextBody); }
+.cs-face--on .cs-face__emoji { border-color: var(--widget-color); box-shadow: 0 0 0 1px var(--widget-color); }
+.cs-face:focus-visible .cs-face__emoji { outline: 2px solid var(--primaryBorderDefault); outline-offset: 2px; }
+
+.cs-nps { display: flex; flex-direction: column; gap: 4px; }
+/* Eleven buttons in one row; on narrow screens they wrap onto two rows and stay tappable (spec §9). */
+.cs-nps__scale { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 4px; }
+.cs-nps__btn { min-width: 0; height: 32px; padding: 0; border: 1px solid var(--slateBorderDark); border-radius: 6px; background: var(--slateSurfaceWhite); font: var(--fontWeightMedium) 13px/1 var(--fontFamily); color: var(--slateTextBody); cursor: pointer; }
+.cs-nps__btn:hover { border-color: var(--widget-color); }
+.cs-nps__btn--on { border-color: var(--widget-color); background: var(--widget-color); color: var(--slateSurfaceWhite); }
+.cs-nps__btn:focus-visible { outline: 2px solid var(--primaryBorderDefault); outline-offset: 2px; }
+.cs-nps__ends { display: flex; justify-content: space-between; font: var(--fontWeightRegular) 11px/16px var(--fontFamily); color: var(--slateTextSubtle); }
+@media (max-width: 480px) { .cs-nps__scale { grid-template-columns: repeat(6, minmax(36px, 1fr)); } .cs-nps__btn { height: 40px; } }
+
+.cs-saved { font: var(--fontWeightRegular) 12px/18px var(--fontFamily); color: var(--successTextBody); transition: opacity 0.3s; opacity: 0.7; }
+.cs-saved--on { opacity: 1; }
+.cs-comment-label { font: var(--fontWeightMedium) 13px/18px var(--fontFamily); color: var(--slateTextTitle); }
+.cs-comment { box-sizing: border-box; width: 100%; padding: 8px 12px; border: 1px solid var(--slateBorderDark); border-radius: 8px; background: var(--slateSurfaceWhite); font: var(--fontWeightRegular) 14px/20px var(--fontFamily); color: var(--slateTextTitle); resize: none; }
+.cs-comment:focus { outline: 2px solid var(--primaryBorderDefault); outline-offset: -1px; }
+.cs-count { align-self: flex-end; margin-top: -8px; font: var(--fontWeightRegular) 11px/16px var(--fontFamily); color: var(--slateTextSubtle); }
+.cs-submit { align-self: center; padding: 6px 16px; border: 0; border-radius: 8px; background: none; font: var(--fontWeightMedium) 14px/20px var(--fontFamily); color: var(--slateTextSubtle); cursor: pointer; }
+.cs-submit:not(:disabled), .cs-submit--on { background: var(--widget-color); color: var(--slateSurfaceWhite); }
+.cs-submit:disabled { cursor: default; }
+.cs-anchor { display: inline-flex; }
+.cs-req { color: var(--errorTextBody); }
+.cs-nested { display: flex; flex-direction: column; gap: 12px; margin-top: -8px; padding-left: 28px; }
+.cs-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.cs-pair > * { min-width: 0; }
+.cs-text-answers { display: flex; flex-direction: column; gap: 8px; }
+.cs-text-answer { padding: 8px 12px; border: 1px solid var(--slateBorderDark); border-radius: 8px; background: var(--slateSurfaceWhite); font: var(--fontWeightRegular) 14px/20px var(--fontFamily); color: var(--slateTextBody); cursor: pointer; text-align: center; }
+.cs-text-answer:hover { border-color: var(--widget-color); }
+.cs-text-answer--on { border-color: var(--widget-color); box-shadow: 0 0 0 1px var(--widget-color); }
+.cs-text-answer:focus-visible { outline: 2px solid var(--primaryBorderDefault); outline-offset: 2px; }
+.cs-face__emoji--big { height: 44px; font-size: 22px; }
+.cs-reasons { display: flex; flex-direction: column; gap: 8px; }
+.cs-reasons__list { display: flex; flex-wrap: wrap; gap: 6px; }
+.cs-reason { padding: 4px 10px; border: 1px solid var(--slateBorderDark); border-radius: 999px; background: var(--slateSurfaceWhite); font: var(--fontWeightRegular) 13px/18px var(--fontFamily); color: var(--slateTextBody); cursor: pointer; }
+.cs-reason:hover { border-color: var(--widget-color); }
+.cs-reason--on { border-color: var(--widget-color); background: var(--widget-color); color: var(--slateSurfaceWhite); }
+.cs-reason:focus-visible { outline: 2px solid var(--primaryBorderDefault); outline-offset: 2px; }

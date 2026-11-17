@@ -13,6 +13,8 @@ import { CHAT_INBOX, chatConversations } from './data'
 import type { ChatConversation, ChatMessage } from './data'
 import { ME, updateLiveChat, useLiveChats } from './liveChats'
 import type { LiveChat } from './liveChats'
+import { npsContactSection } from '../Nps/NpsContactSection'
+import type { Navigate } from '../Nps/nav'
 import './ConversationsPage.css'
 
 const inboxViewId = (view: string) => `${CHAT_INBOX.id}-${view}`
@@ -59,21 +61,24 @@ const viewLabel = (sections: ConversationsSidebarSection[], id: string) => secti
 
 export type ConversationsPageProps = {
   /** Called with the id of the Main nav item that was pressed (for example `admin`). */
-  onNavigate?: (id: string) => void
+  onNavigate?: Navigate
+  /** Opens this conversation straight away, for example from an NPS score in Customers or Analytics. */
+  initialConversationId?: string
 }
 
 /**
  * Conversations: the Chat-Support inbox's views, a list of its chats, the chat thread and the chat right panel.
  * Chats started from /chat-interaction appear live, newest first: in Assigned to Bot, then in Mine once handed to John Cole.
  */
-export function ConversationsPage({ onNavigate }: ConversationsPageProps) {
+export function ConversationsPage({ onNavigate, initialConversationId }: ConversationsPageProps) {
   const live = useLiveChats()
   const all = [...live.map(fromLive), ...chatConversations]
   const sections = makeSections(all)
-  const [viewId, setViewId] = useState(inboxViewId('unassigned'))
+  const initial = initialConversationId ? all.find((c) => c.id === initialConversationId) : undefined
+  const [viewId, setViewId] = useState(inboxViewId(initial?.view ?? 'unassigned'))
   const view = viewId.startsWith(`${CHAT_INBOX.id}-`) ? viewId.slice(CHAT_INBOX.id.length + 1) : undefined
   const list = all.filter((c) => c.view === view)
-  const [selected, setSelected] = useState<string | undefined>(list[0]?.id)
+  const [selected, setSelected] = useState<string | undefined>(initial?.id ?? list[0]?.id)
   const conversation = list.find((c) => c.id === selected) ?? list[0]
   const current = viewLabel(sections, viewId)
 
@@ -81,6 +86,12 @@ export function ConversationsPage({ onNavigate }: ConversationsPageProps) {
     setViewId(id)
     const v = id.startsWith(`${CHAT_INBOX.id}-`) ? id.slice(CHAT_INBOX.id.length + 1) : undefined
     setSelected(all.find((c) => c.view === v)?.id)
+  }
+  const openConversation = (id: string) => {
+    const c = all.find((x) => x.id === id)
+    if (!c) return
+    setViewId(inboxViewId(c.view))
+    setSelected(c.id)
   }
   // Assigning a live chat to John Cole moves it to Mine; back to None returns it to the bot.
   // Closing a live chat adds "Conversation closed by you" here and ends it in the visitor's tab, which then shows CSAT.
@@ -95,12 +106,13 @@ export function ConversationsPage({ onNavigate }: ConversationsPageProps) {
   return (
     <PageLayout
       variant="home"
-      nav={<MainNav items={navSampleItems} footerItems={navSampleFooterItems} value="conversations" onChange={onNavigate} user={{ initial: 'J', name: ME.name }} />}
+      nav={<MainNav items={navSampleItems} footerItems={navSampleFooterItems} value="conversations" onChange={(id) => onNavigate?.(id)} user={{ initial: 'J', name: ME.name }} />}
       sidebar={<ConversationsSidebar sections={sections} value={viewId} onChange={changeView} />}
       rightPanel={conversation ? (
         <ChannelRightPanel channel="chat" inboxName={CHAT_INBOX.name} unassigned={conversation.view !== 'mine'} conversationId={conversation.id}
           assignee={conversation.live ? conversation.assignee : undefined} onAssigneeChange={conversation.live ? assignLive : undefined}
-          status={conversation.live ? (conversation.closed ? 'closed' : 'open') : undefined} onStatusChange={conversation.live ? setLiveStatus : undefined}
+          status={conversation.live ? (conversation.closed ? 'closed' : 'open') : conversation.closed ? 'closed' : undefined} onStatusChange={conversation.live ? setLiveStatus : undefined}
+          leadSections={npsContactSection(conversation.contactId, openConversation, (accountId) => onNavigate?.('customers', { accountId }))}
         />
       ) : undefined}
     >

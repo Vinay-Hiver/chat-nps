@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactElement } from 'react'
 import { Avatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
 import { Tooltip } from '../../components/Tooltip'
@@ -191,8 +191,10 @@ const HIDDEN_SECTIONS = ['conversation', 'customFields']
 const TICKET_SECTIONS = ['activity', 'customFields']
 
 /** The storybook right panel for one channel: its tab, top section, sub-sections in order and "Customize widgets". */
-export function ChannelRightPanel({ channel, inboxName, unassigned, conversationId, ticketId, assignee, onAssigneeChange, status, onStatusChange, onLinkClick, linkedConversations = [], onViewAll, onUnlink, onOpenConversation }: {
+export function ChannelRightPanel({ channel, inboxName, unassigned, conversationId, ticketId, assignee, onAssigneeChange, status, onStatusChange, onLinkClick, linkedConversations = [], onViewAll, onUnlink, onOpenConversation, leadSections = [] }: {
   channel: ChannelId
+  /** RightPanelSection elements shown first, before the channel's own sections (for example NPS). */
+  leadSections?: ReactElement[]
   /** Email only: the conversation is a ticket with this ID, so the panel uses the ticket layout. */
   ticketId?: string
   /** The conversation's assignee (`none` when unassigned), when the caller keeps it. Leave out to let the field manage itself. */
@@ -248,6 +250,7 @@ export function ChannelRightPanel({ channel, inboxName, unassigned, conversation
           return <Row key={f.id} icon={f.icon} label={f.label}>{sample.values[f.id] ?? '-'}</Row>
         })}
       </RightPanelTop>
+      {leadSections}
       {sections.map((s) => s === 'linked' ? linkedConversationsSection(linkedConversations, onLinkClick, onViewAll, onUnlink, onOpenConversation) : (
         // Every section starts closed; only Linked conversations starts open.
         <RightPanelSection key={s.id} id={s.id} title={s.title} icon={s.icon} defaultExpanded={false}>

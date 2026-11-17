@@ -162,13 +162,13 @@ export function FilePickerField({ api, onFocus }: FieldProps) {
 }
 
 /** A row with a title, a line of description and a switch, optionally with more under it when on. */
-export function ToggleRow({ title, description, checked, onChange, children }: { title: string; description: string; checked: boolean; onChange: (on: boolean) => void; children?: ReactNode }) {
+export function ToggleRow({ title, description, checked, onChange, children }: { title: string; description?: string; checked: boolean; onChange: (on: boolean) => void; children?: ReactNode }) {
   return (
     <div className="wd-toggle">
       <div className="wd-toggle__top">
         <div className="wd-toggle__text">
           <span className="wd-toggle__title">{title}</span>
-          <span className="wd-hint wd-hint--body">{description}</span>
+          {description && <span className="wd-hint wd-hint--body">{description}</span>}
         </div>
         <Switch checked={checked} onChange={(e) => onChange(e.target.checked)} aria-label={title} />
       </div>
