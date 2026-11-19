@@ -21,10 +21,6 @@ export type CsatSettings = {
   npsPromptDetractor: string
   npsPromptPassive: string
   npsPromptPromoter: string
-  /** Tap-to-pick reasons after the score: one list for 0–8, one for 9–10. */
-  npsReasons: boolean
-  npsReasonsImprove: string[]
-  npsReasonsLike: string[]
   /** Ask the same contact at most once in this many days. */
   npsPeriod: NpsPeriod
   npsLowLabel: string
@@ -55,8 +51,6 @@ export const DEFAULT_PROMPTS = {
   npsPromptPassive: 'What would make it a 10?',
   npsPromptPromoter: 'What do you like most?',
 } as const
-export const REASONS_MAX = 6
-export const REASON_LEN = 30
 export const NPS_PERIODS: NpsPeriod[] = [30, 60, 90, 180]
 export const COMMENT_MAX = 1000
 /** Character limits for the visitor-facing text. */
@@ -70,9 +64,6 @@ export const DEFAULT_CSAT: CsatSettings = {
   npsCommentPrompt: DEFAULT_COMMENT_PROMPT,
   npsPromptByScore: true,
   ...DEFAULT_PROMPTS,
-  npsReasons: true,
-  npsReasonsImprove: ['Slow reply', 'Issue not solved', 'Hard to explain my issue', 'Product bug', 'Pricing'],
-  npsReasonsLike: ['Quick reply', 'Friendly agent', 'Solved first time', 'Product features'],
   npsPeriod: 90,
   npsLowLabel: 'Not likely',
   npsHighLabel: 'Very likely',
@@ -108,8 +99,6 @@ export const commentPromptShown = (s: CsatSettings, score?: number | null) => {
   const k = PROMPT_KEY[npsGroup(score)]
   return s[k].trim() || DEFAULT_PROMPTS[k]
 }
-/** Reasons offered for a score: what to improve for 0–8, what they liked for 9–10. */
-export const reasonsFor = (s: CsatSettings, score: number) => (score >= 9 ? s.npsReasonsLike : s.npsReasonsImprove)
 
 /** Saved settings, the draft being edited, and whether they differ. The preview shows the draft. */
 export function useCsatSettings() {

@@ -8,7 +8,7 @@ import { Radio, RadioGroup } from '../../components/Radio'
 import { Tabs } from '../../components/Tabs'
 import { PageBar } from '../SharedInboxes/SharedInboxesPage'
 import { ToggleRow } from '../WidgetDesignOptions/fields'
-import { DEFAULT_CSAT, LIMITS, NPS_PERIODS, REASONS_MAX, REASON_LEN, hasErrors, useCsatSettings } from './settings'
+import { DEFAULT_CSAT, LIMITS, NPS_PERIODS, hasErrors, useCsatSettings } from './settings'
 import type { AnswerOrder, AnswerStyle, CsatSettings, CsatSettingsApi, NpsPeriod, SurveyType } from './settings'
 import { SurveyPreview } from './SurveyPreview'
 import type { PreviewCase } from './SurveyPreview'
@@ -100,14 +100,6 @@ function NpsFields({ api }: { api: CsatSettingsApi }) {
       </div>
 
       <ToggleRow
-        title="Offer reasons to pick"
-        checked={s.npsReasons} onChange={(v) => api.set('npsReasons', v)}
-      >
-        <ReasonsField api={api} k="npsReasonsImprove" label="Reasons for scores 0–8" />
-        <ReasonsField api={api} k="npsReasonsLike" label="Reasons for scores 9–10" />
-      </ToggleRow>
-
-      <ToggleRow
         title="Ask for a comment"
         checked={s.npsComment} onChange={(v) => api.set('npsComment', v)}
       >
@@ -130,7 +122,6 @@ function NpsFields({ api }: { api: CsatSettingsApi }) {
       </ToggleRow>
 
       <TextField api={api} k="npsButton" label="Button text" max={LIMITS.button} required />
-      <TextField api={api} k="npsThanks" label="Thank you message" max={LIMITS.thanks} required />
 
       <div className="wd-field">
         <span className="wd-label" id="cs-period-label">Ask a contact once every</span>
@@ -149,24 +140,6 @@ function NpsFields({ api }: { api: CsatSettingsApi }) {
       </div>
 
     </section>
-  )
-}
-
-/** The reasons a visitor can tap after the score, edited as tags. Up to six, each up to 30 characters. */
-function ReasonsField({ api, k, label }: { api: CsatSettingsApi; k: 'npsReasonsImprove' | 'npsReasonsLike'; label: string }) {
-  const tags = api.settings[k]
-  const onTagsChange = (next: string[]) => {
-    const clean = next.map((t) => t.trim().slice(0, REASON_LEN)).filter((t, i, all) => t && all.indexOf(t) === i).slice(0, REASONS_MAX)
-    api.set(k, clean)
-  }
-  return (
-    <div className="wd-field wd-field--stretch">
-      <Input
-        label={label} fullWidth tags={tags} onTagsChange={onTagsChange}
-        placeholder={tags.length >= REASONS_MAX ? '' : 'Type a reason and press Enter'}
-        helperText={`${tags.length}/${REASONS_MAX} reasons. Visitors can pick more than one.`}
-      />
-    </div>
   )
 }
 

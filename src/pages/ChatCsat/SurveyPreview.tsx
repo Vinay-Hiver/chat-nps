@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
-import { COMMENT_MAX, DEFAULT_CSAT, commentPromptShown, npsQuestionShown, reasonsFor } from './settings'
+import { COMMENT_MAX, DEFAULT_CSAT, commentPromptShown, npsQuestionShown } from './settings'
 import type { CsatSettings } from './settings'
 
 /** What the preview shows at the end of the chat. */
@@ -46,7 +46,7 @@ export function SurveyPreview({ settings: s, previewCase, resetKey }: Props) {
             </div>
             <div className="wp-chat__system">Conversation closed</div>
             {showSurvey && (s.type === 'nps'
-              ? <NpsSurvey key={`nps-${resetKey}-${s.npsComment}-${s.npsReasons}`} settings={s} />
+              ? <NpsSurvey key={`nps-${resetKey}-${s.npsComment}`} settings={s} />
               : <RatingSurvey key={`rating-${resetKey}-${s.ratingStyle}`} settings={s} />)}
           </div>
         </div>
@@ -94,27 +94,15 @@ function RatingSurvey({ settings: s }: { settings: CsatSettings }) {
 }
 
 /**
- * The NPS question (spec §7, Visitor). Picking a number saves it straight away and can be changed. Then, when on: reasons
- * to tap (what to improve for 0–8, what they liked for 9–10) and a comment box whose prompt can depend on the score.
- * With both off, the thanks shows right after the score.
+ * The NPS question (spec §7, Visitor). Picking a number saves it straight away and can be changed. Then, when on, a
+ * comment box whose prompt can depend on the score. With the comment off, the thanks shows right after the score.
  */
 function NpsSurvey({ settings: s }: { settings: CsatSettings }) {
   const [score, setScore] = useState<number | null>(null)
-  const [reasons, setReasons] = useState<string[]>([])
   const [comment, setComment] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
-  const reasonList = score === null ? [] : reasonsFor(s, score)
-  const showReasons = s.npsReasons && reasonList.length > 0
-  const followUp = score !== null && (showReasons || s.npsComment)
-  const thanks = submitted || (score !== null && !followUp)
-  const pickScore = (n: number) => {
-    // Reasons differ for 0–8 and 9–10, so picks are cleared when the score crosses that line.
-    if (score !== null && (score >= 9) !== (n >= 9)) setReasons([])
-    setScore(n)
-  }
-  const toggle = (r: string) => setReasons((rs) => (rs.includes(r) ? rs.filter((x) => x !== r) : [...rs, r]))
-
+  const thanks = submitted || (score !== null && !s.npsComment)
   return (
     <div className="cs-card">
       <p className="cs-card__question" id="cs-nps-q">{npsQuestionShown(s)}</p>
@@ -124,35 +112,21 @@ function NpsSurvey({ settings: s }: { settings: CsatSettings }) {
             {Array.from({ length: 11 }, (_, n) => (
               <button
                 key={n} type="button" role="radio" aria-checked={score === n} aria-label={`${n} out of 10`}
-                className={`cs-nps__btn${score === n ? ' cs-nps__btn--on' : ''}`} onClick={() => pickScore(n)}
+                className={`cs-nps__btn${score === n ? ' cs-nps__btn--on' : ''}`} onClick={() => setScore(n)}
               >{n}</button>
             ))}
           </div>
           <div className="cs-nps__ends" aria-hidden><span>{s.npsLowLabel}</span><span>{s.npsHighLabel}</span></div>
         </div>
       )}
-      {followUp && !submitted && (
+      {score !== null && s.npsComment && !submitted && (
         <>
-          {showReasons && (
-            <div className="cs-reasons" role="group" aria-label={score! >= 9 ? 'What went well' : 'What could be better'}>
-              <span className="cs-comment-label">{score! >= 9 ? 'What went well?' : 'What could be better?'}</span>
-              <div className="cs-reasons__list">
-                {reasonList.map((r) => (
-                  <button key={r} type="button" aria-pressed={reasons.includes(r)} className={`cs-reason${reasons.includes(r) ? ' cs-reason--on' : ''}`} onClick={() => toggle(r)}>{r}</button>
-                ))}
-              </div>
-            </div>
-          )}
-          {s.npsComment && (
-            <>
-              <label className="cs-comment-label" htmlFor="cs-nps-comment">{commentPromptShown(s, score)}</label>
-              <textarea
-                id="cs-nps-comment" className="cs-comment" rows={3} maxLength={COMMENT_MAX} placeholder={s.npsPlaceholder}
-                value={comment} onChange={(e) => setComment(e.target.value)}
-              />
-              <span className="cs-count">{comment.length}/{COMMENT_MAX}</span>
-            </>
-          )}
+          <label className="cs-comment-label" htmlFor="cs-nps-comment">{commentPromptShown(s, score)}</label>
+          <textarea
+            id="cs-nps-comment" className="cs-comment" rows={3} maxLength={COMMENT_MAX} placeholder={s.npsPlaceholder}
+            value={comment} onChange={(e) => setComment(e.target.value)}
+          />
+          <span className="cs-count">{comment.length}/{COMMENT_MAX}</span>
           <button type="button" className="cs-submit cs-submit--on" onClick={() => setSubmitted(true)}>{shown(s, 'npsButton')}</button>
         </>
       )}

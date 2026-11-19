@@ -45,7 +45,6 @@ function Message({ m }: { m: ChatMessage }) {
           <span>Visitor answered the NPS question</span>
           <Tag color={GROUP_COLOR[group]}>NPS {m.score} · {GROUP_LABEL[group]}</Tag>
         </div>
-        {m.reasons && m.reasons.length > 0 && <div className="chat-nps__reasons" aria-label="Reasons picked">{m.reasons.map((r) => <Tag key={r}>{r}</Tag>)}</div>}
         {m.comment && <p className="chat-nps__comment">“{m.comment}”</p>}
         <span className="chat-message__meta">{m.time}</span>
       </div>

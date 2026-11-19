@@ -13,7 +13,7 @@ const DAY = 86_400_000
 
 export type Account = { id: string; name: string; domain: string; owner: string }
 export type Contact = { id: string; name: string; email: string; accountId: string | null }
-export type NpsResponse = { id: string; contactId: string; score: number; comment?: string; reasons?: string[]; date: string; inbox: 'chat-support' | 'website-chat'; topic: string; reply: string }
+export type NpsResponse = { id: string; contactId: string; score: number; comment?: string; date: string; inbox: 'chat-support' | 'website-chat'; topic: string; reply: string }
 
 export const ACCOUNTS: Account[] = [
   { id: 'rivermill', name: 'Rivermill Plastics', domain: 'rivermill.com', owner: 'Meera Iyer' },
@@ -68,26 +68,6 @@ export const RESPONSES: NpsResponse[] = [
   { id: 'r21', contactId: 'hannah', score: 7, date: d(80), inbox: 'chat-support', topic: 'Change alert threshold', reply: 'Threshold set to 5 minutes for Line 2.' },
   { id: 'r22', contactId: 'zara', score: 9, date: d(76), inbox: 'website-chat', topic: 'Invoice copy', reply: 'Sent the October invoice to your email.' },
 ]
-
-/** Reasons the visitor tapped after the score (CSAT settings › Offer reasons to pick). */
-const PICKED: Record<string, string[]> = {
-  r1: ['Issue not solved', 'Product bug'], r2: ['Hard to explain my issue'], r3: ['Slow reply'], r4: ['Product features', 'Quick reply'],
-  r5: ['Quick reply', 'Friendly agent', 'Solved first time'], r6: ['Friendly agent'], r7: ['Product bug'], r8: ['Solved first time'],
-  r10: ['Hard to explain my issue'], r11: ['Product features'], r12: ['Issue not solved', 'Product bug'], r13: ['Product bug'],
-  r14: ['Quick reply'], r15: ['Issue not solved', 'Pricing'], r16: ['Slow reply', 'Issue not solved'], r17: ['Pricing'],
-  r18: ['Quick reply', 'Friendly agent'], r19: ['Slow reply'], r20: ['Friendly agent', 'Solved first time'], r22: ['Solved first time'],
-}
-for (const r of RESPONSES) if (PICKED[r.id]) r.reasons = PICKED[r.id]
-
-/** How often each reason was picked, most first. Split into 0–8 (improve) and 9–10 (liked). */
-export function topReasons(rs: NpsResponse[]) {
-  const count = (list: NpsResponse[]) => {
-    const m = new Map<string, number>()
-    for (const r of list) for (const x of r.reasons ?? []) m.set(x, (m.get(x) ?? 0) + 1)
-    return [...m.entries()].map(([reason, n]) => ({ reason, n })).sort((a, b) => b.n - a.n)
-  }
-  return { improve: count(rs.filter((r) => r.score <= 8)), like: count(rs.filter((r) => r.score >= 9)) }
-}
 
 export const contactById = (id: string) => CONTACTS.find((c) => c.id === id)
 export const accountById = (id: string | null | undefined) => (id ? ACCOUNTS.find((a) => a.id === id) : undefined)

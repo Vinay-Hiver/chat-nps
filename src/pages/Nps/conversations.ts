@@ -19,7 +19,7 @@ export function npsConversations(): ChatConversation[] {
         { kind: 'agent-text', text: r.reply, time: at(r.date, 6), sender: 'John Cole' },
         { kind: 'incoming', text: 'Thanks, that works.', time: at(r.date, 4) },
         { kind: 'event', text: 'Conversation closed by John Cole', time: at(r.date, 3) },
-        { kind: 'nps', score: r.score, comment: r.comment, reasons: r.reasons, time: at(r.date, 1) },
+        { kind: 'nps', score: r.score, comment: r.comment, time: at(r.date, 1) },
       ],
     }
   })

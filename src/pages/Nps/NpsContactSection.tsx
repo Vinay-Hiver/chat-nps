@@ -31,7 +31,6 @@ export function npsContactSection(contactId: string | undefined, onOpenConversat
               <Tag color={GROUP_COLOR[npsGroup(latest.score)]}>{GROUP_LABEL[npsGroup(latest.score)]}</Tag>
               <span className="nps-rp__muted">{fmtDate(latest.date)}</span>
             </div>
-            {latest.reasons && latest.reasons.length > 0 && <div className="nps-reasons">{latest.reasons.map((r) => <Tag key={r}>{r}</Tag>)}</div>}
             {latest.comment && <p className="nps-rp__comment">“{latest.comment}”</p>}
           </div>
         ) : <span className="nps-rp__muted">No NPS answers yet.</span>}

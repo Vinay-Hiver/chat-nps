@@ -46,9 +46,3 @@
 .cs-text-answer--on { border-color: var(--widget-color); box-shadow: 0 0 0 1px var(--widget-color); }
 .cs-text-answer:focus-visible { outline: 2px solid var(--primaryBorderDefault); outline-offset: 2px; }
 .cs-face__emoji--big { height: 44px; font-size: 22px; }
-.cs-reasons { display: flex; flex-direction: column; gap: 8px; }
-.cs-reasons__list { display: flex; flex-wrap: wrap; gap: 6px; }
-.cs-reason { padding: 4px 10px; border: 1px solid var(--slateBorderDark); border-radius: 999px; background: var(--slateSurfaceWhite); font: var(--fontWeightRegular) 13px/18px var(--fontFamily); color: var(--slateTextBody); cursor: pointer; }
-.cs-reason:hover { border-color: var(--widget-color); }
-.cs-reason--on { border-color: var(--widget-color); background: var(--widget-color); color: var(--slateSurfaceWhite); }
-.cs-reason:focus-visible { outline: 2px solid var(--primaryBorderDefault); outline-offset: 2px; }

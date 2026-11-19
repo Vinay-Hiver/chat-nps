@@ -9,7 +9,7 @@ export const CHAT_INBOX = { id: 'chat-support', name: 'Chat-Support' }
 export type ChatMessage =
   | { kind: 'incoming' | 'agent-text' | 'event'; text: string; time: string; sender?: string }
   /** The visitor's NPS answer, shown in the conversation's activity (NPS spec §7). */
-  | { kind: 'nps'; score: number; comment?: string; reasons?: string[]; time: string }
+  | { kind: 'nps'; score: number; comment?: string; time: string }
 
 export type ChatConversation = {
   id: string

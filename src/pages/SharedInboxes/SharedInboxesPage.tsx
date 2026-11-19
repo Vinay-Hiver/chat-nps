@@ -108,7 +108,8 @@ export function SharedInboxesPage({ channel: initialChannel = 'email', inboxId, 
       </div>
     )
   } else {
-    subNav = <SubNav title="Shared Inboxes" items={sharedInboxChannels.map((c) => ({ id: c.id, label: c.label, icon: c.icon }))} value={channel.id} onChange={(id) => setChannelId(id as SubNavChannelId)} />
+    // This prototype is about chat: the other channels keep their hover state but do nothing on click.
+    subNav = <SubNav title="Shared Inboxes" items={sharedInboxChannels.map((c) => ({ id: c.id, label: c.label, icon: c.icon }))} value={channel.id} onChange={(id) => { if (id === 'chat') setChannelId('chat') }} />
     content = (
       <>
         <PageBar title={channel.label} action={<Button variant="primary" size="sm" onClick={channel.id === 'chat' ? () => setCreating(true) : undefined}>{`Create ${channel.singular}`}</Button>} />

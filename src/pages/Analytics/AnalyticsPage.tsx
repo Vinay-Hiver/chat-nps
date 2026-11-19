@@ -11,7 +11,7 @@ import { MainNav } from '../../patterns/MainNav'
 import { navSampleFooterItems, navSampleItems } from '../../patterns/MainNav/sampleData'
 import { PageLayout } from '../../patterns/PageLayout'
 import { PageBar } from '../SharedInboxes/SharedInboxesPage'
-import { ACCOUNTS, TODAY, accountById, accountNps, contactById, conversationIdFor, fmtDate, fmtNps, latestByContact, lastDays, npsGroup, npsOf, pct, previousPeriod, responsesIn, splitOf, topReasons } from '../Nps/data'
+import { ACCOUNTS, TODAY, accountById, accountNps, contactById, conversationIdFor, fmtDate, fmtNps, latestByContact, lastDays, npsGroup, npsOf, pct, previousPeriod, responsesIn, splitOf } from '../Nps/data'
 import type { NpsResponse, Period } from '../Nps/data'
 import type { Navigate } from '../Nps/nav'
 import { NpsValue, ScoreTag, SelectMenu } from '../Nps/shared'
@@ -90,7 +90,6 @@ function NpsReport({ onOpenConversation, onOpenAccount }: { onOpenConversation: 
   const prevNps = npsOf(responsesIn(previousPeriod(p), inbox).map((r) => r.score))
   const delta = nps !== null && prevNps !== null ? nps - prevNps : null
   const trend = weeklyTrend(p, inbox)
-  const reasons = topReasons(all)
   const shown = trend.reduce((n, w) => n + w.shown, 0)
 
   const accountRows = [...ACCOUNTS.map((a) => ({ id: a.id, name: a.name, ...accountNps(a.id, p, inbox) })), { id: 'none', name: 'No account', ...accountNps(null, p, inbox) }]
@@ -110,7 +109,6 @@ function NpsReport({ onOpenConversation, onOpenAccount }: { onOpenConversation: 
   const contactColumns: TableColumn<NpsResponse>[] = [
     { key: 'name', header: 'Contact', render: (r) => <button type="button" className="nps-link" onClick={(e) => { e.stopPropagation(); onOpenConversation(conversationIdFor(r)) }}>{contactById(r.contactId)?.name}</button> },
     { key: 'score', header: 'Latest score', width: 150, render: (r) => <ScoreTag score={r.score} /> },
-    { key: 'reasons', header: 'Reasons', render: (r) => r.reasons?.length ? <span className="nps-cell__comment" title={r.reasons.join(', ')}>{r.reasons.join(', ')}</span> : <span className="nps-cell__muted">-</span> },
     { key: 'comment', header: 'Comment', render: (r) => r.comment ? <span className="nps-cell__comment" title={r.comment}>{r.comment}</span> : <span className="nps-cell__muted">-</span> },
     { key: 'account', header: 'Account', render: (r) => accountById(contactById(r.contactId)?.accountId)?.name ?? <span className="nps-cell__muted">No account</span> },
     { key: 'date', header: 'Date', width: 110, render: (r) => fmtDate(r.date) },
@@ -162,29 +160,6 @@ function NpsReport({ onOpenConversation, onOpenAccount }: { onOpenConversation: 
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="nps-reasons-report">
-          {([['improve', 'What could be better', 'Picked with scores 0–8'], ['like', 'What went well', 'Picked with scores 9–10']] as const).map(([k, title, hint]) => {
-            const rows = reasons[k]
-            const max = rows[0]?.n ?? 0
-            return (
-              <div key={k} className="nps-reasons-report__col">
-                <div className="nps-trend__head"><h2 className="nps-section-title">{title}</h2><span className="nps-hint">{hint}</span></div>
-                {rows.length === 0 ? <span className="nps-hint">No reasons picked in this range.</span> : (
-                  <ul className="nps-reasons-report__list">
-                    {rows.map((r) => (
-                      <li key={r.reason} className="nps-reasons-report__row">
-                        <span className="nps-reasons-report__name">{r.reason}</span>
-                        <span className="nps-reasons-report__track"><span className={`nps-reasons-report__bar nps-reasons-report__bar--${k}`} style={{ width: `${(r.n / max) * 100}%` }} /></span>
-                        <span className="nps-reasons-report__n">{r.n}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )
-          })}
         </div>
 
         <div className="nps-toolbar">
