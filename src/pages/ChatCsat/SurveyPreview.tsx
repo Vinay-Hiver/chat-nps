@@ -28,7 +28,7 @@ export function SurveyPreview({ settings: s }: Props) {
           {s.enabled && (s.type === 'nps' ? <NpsSurvey settings={s} /> : <RatingSurvey settings={s} />)}
         </div>
       </div>
-      <div className="wp-launcher-row"><span className="wp-launcher cs-launcher" aria-label="Open chat"><Icon name="chatsupport" size={24} /></span></div>
+      <div className="wp-launcher-row"><span className="wp-launcher cs-launcher" aria-label="Close chat"><Icon name="close" size={16} style={{ width: 20, height: 20 }} /></span></div>
     </div>
   )
 }

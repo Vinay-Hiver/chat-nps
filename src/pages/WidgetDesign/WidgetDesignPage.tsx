@@ -425,7 +425,7 @@ export function WidgetDesignPage() {
                 <span className="hot-wd-skeleton__button" />
               </div>
               <span className={`hot-wd-launcher${launcherLabel ? ' hot-wd-launcher--pill' : ''}`} aria-label={launcherLabel || 'Open chat'}>
-                {launcherShown ? <img src={launcherShown.url} alt="" width={24} height={24} /> : <span className="hot-wd-launcher__slot"><Icon name="chatsupport" size={24} /></span>}
+                {launcherShown ? <img src={launcherShown.url} alt="" width={24} height={24} /> : <span className="hot-wd-launcher__slot"><Icon name="close" size={16} style={{ width: 20, height: 20 }} /></span>}
                 {launcherLabel && <span className="hot-wd-launcher__label">{launcherLabel}</span>}
                 {launcherTooltip && <span className="hot-wd-tooltip" role="tooltip">{launcherTooltip}</span>}
               </span>
