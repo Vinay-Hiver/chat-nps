@@ -65,7 +65,7 @@
 .cs-comment--tall { height: 100px; padding: 10px 8px; border: 1.5px solid var(--slateBorderLight); border-radius: 6px; }
 .cs-comment--tall::placeholder { color: var(--slateTextDisabled); }
 .cs-submit--full { align-self: stretch; height: 28px; padding: 0 20px; border-radius: 6px; background: var(--widget-color); color: var(--slateSurfaceWhite); }
-.cs-submit--full:disabled { cursor: default; }
+.cs-submit--full:disabled { background: var(--slateSurfaceDisabled); color: var(--slateTextDisabled); cursor: not-allowed; }
 .cs-launcher { width: 48px; min-width: 48px; height: 48px; padding: 0; }
 /* Widget sits in the middle of the grey preview area. */
 .cs-preview { justify-content: center; padding: 20px; }
