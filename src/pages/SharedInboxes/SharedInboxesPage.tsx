@@ -117,7 +117,7 @@ export function SharedInboxesPage({ channel: initialChannel = 'email', inboxId, 
           {inboxes.length > 0 ? (
             <Table
               aria-label={channel.label} columns={columns} rows={inboxes} getRowId={(r) => r.id}
-              onRowClick={(r) => { setOpen({ channel: channel.id, inbox: r }); if (channel.id === 'chat') setPage('widgetDesign') }}
+              onRowClick={(r) => { setOpen({ channel: channel.id, inbox: r }); if (channel.id === 'chat') setPage('csat') }}
               rowActions={[{ icon: 'delete', label: 'Delete', onClick: (r) => setLists((l) => ({ ...l, [channel.id]: l[channel.id].filter((i) => i.id !== r.id) })) }]}
             />
           ) : (

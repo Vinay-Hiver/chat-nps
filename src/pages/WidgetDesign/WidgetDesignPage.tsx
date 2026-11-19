@@ -109,7 +109,7 @@ export function WidgetDesignPage() {
   // Conversation (R5, R7)
   const [agentName, setAgentName] = useState<AgentName>(saved.agentName)
   const [filePicker, setFilePicker] = useState(saved.filePicker)
-  const [csat, setCsat] = useState(saved.csat)
+  const csat = saved.csat // Set on the CSAT page now; kept so saved settings stay intact.
   const [history, setHistory] = useState(saved.history)
   const [historyDesign] = useState<HistoryDesign>(saved.historyDesign)
   const [chatView, setChatView] = useState<'chat' | 'history'>('chat')
@@ -401,7 +401,6 @@ export function WidgetDesignPage() {
               <span className="hot-wd-section__title">Features</span>
               <div className="hot-wd-features">
               <ToggleCard title="File attachments" description="Visitors can attach files and images in the chat" checked={filePicker} onChange={(v) => { edit(setFilePicker)(v); setPreview('chat') }} />
-              <ToggleCard title="CSAT" description="Show CSAT (Customer satisfaction survey) to the visitor after the chat is closed" checked={csat} onChange={edit(setCsat)} />
               <ToggleCard
                 title="Previous conversations" description="Returning visitors can see and continue past chats with this inbox."
                 checked={history} onChange={(v) => { edit(setHistory)(v); setChatView('chat'); setPreview('chat') }}
