@@ -33,11 +33,19 @@ export function SurveyPreview({ settings: s }: Props) {
   )
 }
 
+/** `onDone` runs when the visitor submits. */
+type SurveyProps = { settings: CsatSettings; onDone?: () => void }
+
+/** The survey the saved settings ask for: the 0–10 scale for NPS, the three faces otherwise. */
+export function Survey(props: SurveyProps) {
+  return props.settings.type === 'nps' ? <NpsSurvey {...props} /> : <RatingSurvey {...props} />
+}
+
 /** Shows the admin's text, or the default while a field is empty. */
 const shown = (s: CsatSettings, k: keyof CsatSettings) => (String(s[k]).trim() || String(DEFAULT_CSAT[k]))
 
 /** Conversation rating: three faces with their labels, in the admin's order, then a comment box and the button. */
-function RatingSurvey({ settings: s }: { settings: CsatSettings }) {
+export function RatingSurvey({ settings: s, onDone }: SurveyProps) {
   const [pick, setPick] = useState<string | null>(null)
   const [done, setDone] = useState(false)
   const answers = [
@@ -59,13 +67,13 @@ function RatingSurvey({ settings: s }: { settings: CsatSettings }) {
         ))}
       </div>
       <textarea className="cs-comment cs-comment--tall" placeholder={shown(s, 'ratingPlaceholder')} aria-label="Comments" />
-      <button type="button" className="cs-submit cs-submit--full" disabled={!pick} onClick={() => setDone(true)}>{shown(s, 'ratingButton')}</button>
+      <button type="button" className="cs-submit cs-submit--full" disabled={!pick} onClick={() => { setDone(true); onDone?.() }}>{shown(s, 'ratingButton')}</button>
     </div>
   )
 }
 
 /** NPS: a joined 0–10 scale in the admin's order with the end labels under it, then a comment box and the button. */
-function NpsSurvey({ settings: s }: { settings: CsatSettings }) {
+export function NpsSurvey({ settings: s, onDone }: SurveyProps) {
   const [score, setScore] = useState<number | null>(null)
   const [done, setDone] = useState(false)
   const scores = Array.from({ length: 11 }, (_, n) => n)
@@ -87,7 +95,7 @@ function NpsSurvey({ settings: s }: { settings: CsatSettings }) {
         <div className="cs-nps__ends" aria-hidden><span>{ends[0]}</span><span>{ends[1]}</span></div>
       </div>
       <textarea className="cs-comment cs-comment--tall" maxLength={COMMENT_MAX} placeholder={shown(s, 'npsPlaceholder')} aria-label="Comments" />
-      <button type="button" className="cs-submit cs-submit--full" disabled={score === null} onClick={() => setDone(true)}>{shown(s, 'npsButton')}</button>
+      <button type="button" className="cs-submit cs-submit--full" disabled={score === null} onClick={() => { setDone(true); onDone?.() }}>{shown(s, 'npsButton')}</button>
     </div>
   )
 }

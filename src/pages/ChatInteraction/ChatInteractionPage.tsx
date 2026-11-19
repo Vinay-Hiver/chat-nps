@@ -7,7 +7,10 @@ import { DotsVertical } from '../WidgetDesign/WidgetDesignPage'
 import { DEFAULT_START_LABEL, launcherImage, loadSettings } from '../WidgetDesign/widgetSettings'
 import { ME, addLiveMessage, createLiveChat, readLiveChats, subscribeLiveChats, updateLiveChat, useLiveChats } from '../Conversations/liveChats'
 import type { LiveChat, LiveMessage } from '../Conversations/liveChats'
+import { loadCsat } from '../ChatCsat/settings'
+import { Survey } from '../ChatCsat/SurveyPreview'
 import '../WidgetDesign/WidgetDesignPage.css'
+import '../ChatCsat/ChatCsatPage.css'
 import './ChatInteractionPage.css'
 
 /**
@@ -35,7 +38,6 @@ type Item =
   | { kind: 'divider'; id: number; text: string; pending?: boolean }
 type Stage = 'home' | 'chat' | 'closed' | 'thanks'
 type Banner = null | 'offline' | 'unavailable' | 'online'
-type Rating = 'good' | 'okay' | 'bad'
 
 const fmtTime = (t: number) => new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
 const fmtDate = (t: number) => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
@@ -54,6 +56,8 @@ function BannerIcon({ kind }: { kind: Exclude<Banner, null> }) {
 
 export function ChatInteractionPage() {
   const [s] = useState(loadSettings)
+  // The survey saved in Admin › Chat-Support › CSAT (rating or NPS, with its wording and order).
+  const [csat] = useState(loadCsat)
   const [open, setOpen] = useState(false)
   const [closing, setClosing] = useState(false)
   const [stage, setStage] = useState<Stage>('home')
@@ -80,9 +84,8 @@ export function ChatInteractionPage() {
   const allChats = useLiveChats()
   // After a click the tooltip stays hidden until the pointer leaves and comes back.
   const [tipQuiet, setTipQuiet] = useState(false)
-  // CSAT (states 20–23)
-  const [rating, setRating] = useState<Rating | null>(null)
-  const [feedback, setFeedback] = useState('')
+  // CSAT (states 20–23): a new key per chat clears the last answer.
+  const [surveyKey, setSurveyKey] = useState(0)
   const timers = useRef<number[]>([])
   const nextId = useRef(1)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -168,15 +171,14 @@ export function ChatInteractionPage() {
     step.current = 'done'
     // Ended here, Hiver marks it closed too (an agent's close is already recorded).
     if (chatId.current) updateLiveChat(chatId.current, (c) => ({ closed: c.closed ?? { by: 'visitor', at: Date.now() } }))
-    later(600, () => { push({ text: 'Conversation Closed' }); setStage(s.csat ? 'closed' : 'thanks') })
+    later(600, () => { push({ text: 'Conversation Closed' }); setStage(csat.enabled ? 'closed' : 'thanks') })
   }
 
   const startChat = () => {
     stopTimers()
     setItems([])
     setHuman(false)
-    setRating(null)
-    setFeedback('')
+    setSurveyKey((k) => k + 1)
     step.current = 'ask'
     chatId.current = null
     transcript.current = []
@@ -421,21 +423,10 @@ export function ChatInteractionPage() {
               <div className="hot-ci-thread" ref={scrollRef} aria-live="polite">
                 {msgGroups}
                 {typing && <div className="hot-ci-msg hot-ci-msg--in hot-ci-msg--first"><span className="hot-ci-bubble hot-ci-typing" aria-label="Agent is typing"><span className="hot-ci-dots"><i /><i /><i /></span></span></div>}
-                {stage === 'closed' && (
-                  <form className="hot-ci-csat" onSubmit={(e) => { e.preventDefault(); if (rating) setStage('thanks') }}>
-                    <p>How was your conversation experience with us?</p>
-                    <div className="hot-ci-csat__options" role="radiogroup" aria-label="Rating">
-                      {([['good', '😀', 'Satisfied'], ['okay', '😐', 'Okay'], ['bad', '🙁', 'Not Satisfied']] as const).map(([v, emoji, label]) => (
-                        <button key={v} type="button" role="radio" aria-checked={rating === v} className={rating && rating !== v ? 'hot-ci-csat__dim' : undefined} onClick={() => setRating(v)}>
-                          <span className="hot-ci-csat__emoji">{emoji}</span><span className="hot-ci-csat__label">{label}</span>
-                        </button>
-                      ))}
-                    </div>
-                    <textarea value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder="Please share your feedback" rows={4} />
-                    <button type="submit" className="hot-ci-primary" disabled={!rating}>Submit</button>
-                  </form>
+                {(stage === 'closed' || (stage === 'thanks' && csat.enabled)) && (
+                  <div className="hot-ci-survey"><Survey key={surveyKey} settings={csat} onDone={() => setStage('thanks')} /></div>
                 )}
-                {stage === 'thanks' && <div className="hot-ci-thanks">{s.csat ? 'Thank you for your feedback.' : 'Thanks for chatting with us.'}</div>}
+                {stage === 'thanks' && !csat.enabled && <div className="hot-ci-thanks">Thanks for chatting with us.</div>}
               </div>
 
               {stage === 'chat' ? (

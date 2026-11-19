@@ -66,12 +66,28 @@ export const npsGroup = (score: number): NpsGroup => (score >= 9 ? 'promoter' : 
 export const NPS_GROUP_LABEL: Record<NpsGroup, string> = { promoter: 'Promoter', passive: 'Passive', detractor: 'Detractor' }
 
 /** Saved settings, the draft being edited, and whether they differ. The preview shows the draft. */
+const KEY = 'hot-csat-settings'
+
+/** The last saved settings (shared with the visitor's chat in /chat-interaction), or the defaults. */
+export function loadCsat(): CsatSettings {
+  try {
+    const raw = localStorage.getItem(KEY)
+    return raw ? { ...DEFAULT_CSAT, ...JSON.parse(raw) } : DEFAULT_CSAT
+  } catch {
+    return DEFAULT_CSAT
+  }
+}
+
+function saveCsat(s: CsatSettings) {
+  try { localStorage.setItem(KEY, JSON.stringify(s)) } catch { /* storage refused: this tab still has them */ }
+}
+
 export function useCsatSettings() {
-  const [saved, setSaved] = useState<CsatSettings>(DEFAULT_CSAT)
-  const [draft, setDraft] = useState<CsatSettings>(DEFAULT_CSAT)
+  const [saved, setSaved] = useState<CsatSettings>(loadCsat)
+  const [draft, setDraft] = useState<CsatSettings>(saved)
   const set = <K extends keyof CsatSettings>(key: K, value: CsatSettings[K]) => setDraft((d) => ({ ...d, [key]: value }))
   const dirty = (Object.keys(draft) as (keyof CsatSettings)[]).some((k) => draft[k] !== saved[k])
-  return { settings: draft, saved, set, dirty, save: () => setSaved(draft), discard: () => setDraft(saved) }
+  return { settings: draft, saved, set, dirty, save: () => { setSaved(draft); saveCsat(draft) }, discard: () => setDraft(saved) }
 }
 
 export type CsatSettingsApi = ReturnType<typeof useCsatSettings>

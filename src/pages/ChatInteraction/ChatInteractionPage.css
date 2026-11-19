@@ -101,18 +101,7 @@
 .hot-ci-stop { width: 10px; height: 10px; border: 1.5px solid var(--slateSurfaceWhite); border-radius: 2px; }
 
 /* CSAT (states 20–23) */
-.hot-ci-csat { display: flex; flex-direction: column; gap: 16px; margin-top: auto; padding: 20px; border-radius: 12px; background: var(--slateSurfaceSubtle100Hover); animation: hot-ci-rise 300ms var(--ci-ease) both; }
-.hot-ci-csat p { margin: 0; font: var(--fontWeightRegular) 14px/20px var(--fontFamily); text-align: center; }
-.hot-ci-csat__options { display: flex; gap: 6px; }
-.hot-ci-csat__options button { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 8px; padding: 0; border: 0; background: none; cursor: pointer; }
-.hot-ci-csat__emoji { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 100%; height: 36px; border: 1px solid var(--slateBorderDefault); border-radius: 6px; background: var(--slateSurfaceWhite); font-size: 16px; }
-.hot-ci-csat__options button[aria-checked='true'] .hot-ci-csat__emoji { background: var(--slateSurfaceSubtle); }
-.hot-ci-csat__label { font: var(--fontWeightRegular) 13px/19px var(--fontFamily); color: var(--slateTextBody); }
-.hot-ci-csat__options button[aria-checked='true'] .hot-ci-csat__label { font-weight: var(--fontWeightMedium); color: var(--slateTextTitle); }
-.hot-ci-csat__dim .hot-ci-csat__label { color: var(--slateTextSubtle); }
-.hot-ci-csat textarea { box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--slateBorderDefault); border-radius: 8px; resize: none; font: var(--fontWeightRegular) 14px/20px var(--fontFamily); }
-.hot-ci-csat textarea:focus { outline: none; border-color: var(--widget-color); }
-.hot-ci-csat .hot-ci-primary:disabled { background: transparent; }
+.hot-ci-survey { margin-top: auto; animation: hot-ci-rise 300ms var(--ci-ease) both; }
 .hot-ci-thanks { margin-top: auto; padding: 20px; border-radius: 12px; background: var(--slateSurfaceSubtle100Hover); font: var(--fontWeightRegular) 14px/20px var(--fontFamily); text-align: center; animation: hot-ci-rise 300ms var(--ci-ease) both; }
 
 /* Connection banners (states 9–11) */
