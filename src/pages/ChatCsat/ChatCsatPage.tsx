@@ -1,11 +1,14 @@
+import { useRef, useState } from 'react'
 import { Icon } from '../../icons/Icon'
+import { Dropdown } from '../../components/Dropdown'
+import { Popover } from '../../components/Popover'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { Radio, RadioGroup } from '../../components/Radio'
 import { PageBar } from '../SharedInboxes/SharedInboxesPage'
 import { Switch } from '../../components/Switch'
-import { DEFAULT_CSAT, LIMITS, hasErrors, useCsatSettings } from './settings'
-import type { AnswerOrder, CsatSettings, CsatSettingsApi, SurveyType } from './settings'
+import { DEFAULT_CSAT, LIMITS, NPS_PERIODS, hasErrors, useCsatSettings } from './settings'
+import type { AnswerOrder, CsatSettings, CsatSettingsApi, NpsPeriod, SurveyType } from './settings'
 import { SurveyPreview } from './SurveyPreview'
 import '../WidgetDesign/WidgetDesignPage.css'
 import '../WidgetDesignOptions/WidgetDesignOptionsPage.css'
@@ -88,6 +91,31 @@ function NpsFields({ api }: { api: CsatSettingsApi }) {
       <TextField api={api} k="npsPlaceholder" label="Description placeholder text" max={LIMITS.placeholder} count={false} />
       <TextField api={api} k="npsButton" label="Button text" max={LIMITS.button} required count={false} />
       <TextField api={api} k="npsThanks" label="Thank you message" max={LIMITS.thanks} required count={false} />
+      <PeriodField api={api} />
+    </div>
+  )
+}
+
+/** How often the same contact can be asked (PRD §7: 30, 60, 90 or 180 days, default 90). */
+function PeriodField({ api }: { api: CsatSettingsApi }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const days = api.settings.npsPeriod
+  return (
+    <div className="wd-field">
+      <div ref={ref} className="cs-select-wrap"><Input
+        label="Don’t ask the same contact again for" value={`${days} days`} readOnly
+        suffix={<Icon name={open ? 'chevrontop' : 'chevrondown'} size={16} />}
+        aria-haspopup="listbox" aria-expanded={open} className="cs-select" onClick={() => setOpen((o) => !o)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); setOpen(true) } }}
+      /></div>
+      <Popover open={open} onClose={() => setOpen(false)} anchorRef={ref}>
+        <Dropdown
+          variant="radio" value={String(days)}
+          options={NPS_PERIODS.map((d) => ({ value: String(d), label: `${d} days${d === 90 ? ' (recommended)' : ''}` }))}
+          onChange={(v: string | string[]) => { api.set('npsPeriod', Number(Array.isArray(v) ? v[0] : v) as NpsPeriod); setOpen(false) }}
+        />
+      </Popover>
     </div>
   )
 }

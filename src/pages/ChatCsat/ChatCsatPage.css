@@ -69,3 +69,7 @@
 .cs-launcher { width: 48px; min-width: 48px; height: 48px; padding: 0; }
 /* Widget sits in the middle of the grey preview area. */
 .cs-preview { justify-content: center; padding: 20px; }
+
+/* The ask-period field is a read-only input that opens a menu. */
+.cs-select { cursor: pointer; caret-color: transparent; }
+.cs-select-wrap { align-self: flex-start; }

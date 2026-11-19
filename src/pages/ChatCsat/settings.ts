@@ -3,6 +3,9 @@ import { useState } from 'react'
 /** Settings for a chat inbox's end-of-chat survey (Product Spec: NPS style chat CSAT, §6–7). */
 export type SurveyType = 'rating' | 'nps'
 export type AnswerOrder = 'good-first' | 'bad-first'
+/** Days before the same contact can be asked the NPS question again. */
+export type NpsPeriod = 30 | 60 | 90 | 180
+export const NPS_PERIODS: NpsPeriod[] = [30, 60, 90, 180]
 
 export type CsatSettings = {
   /** Ask a question when the chat ends. */
@@ -13,6 +16,8 @@ export type CsatSettings = {
   npsQuestion: string
   /** Which end of the 0–10 scale comes first. */
   npsOrder: AnswerOrder
+  /** Asked at most once in this many days per contact (PRD §7). */
+  npsPeriod: NpsPeriod
   npsLowLabel: string
   npsHighLabel: string
   npsPlaceholder: string
@@ -40,6 +45,7 @@ export const DEFAULT_CSAT: CsatSettings = {
   type: 'rating',
   npsQuestion: RATING_QUESTION,
   npsOrder: 'bad-first',
+  npsPeriod: 90,
   npsLowLabel: 'Poor',
   npsHighLabel: 'Excellent',
   npsPlaceholder: 'Additional comments (optional)',
