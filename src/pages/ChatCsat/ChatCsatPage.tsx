@@ -7,8 +7,8 @@ import { Input } from '../../components/Input'
 import { Radio, RadioGroup } from '../../components/Radio'
 import { PageBar } from '../SharedInboxes/SharedInboxesPage'
 import { Switch } from '../../components/Switch'
-import { DEFAULT_CSAT, LIMITS, NPS_PERIODS, hasErrors, useCsatSettings } from './settings'
-import type { AnswerOrder, CsatSettings, CsatSettingsApi, NpsPeriod, SurveyType } from './settings'
+import { DEFAULT_CSAT, LIMITS, NPS_PERIODS, NPS_PERIOD_MAX, hasErrors, useCsatSettings } from './settings'
+import type { AnswerOrder, CsatSettings, CsatSettingsApi, SurveyType } from './settings'
 import { SurveyPreview } from './SurveyPreview'
 import '../WidgetDesign/WidgetDesignPage.css'
 import '../WidgetDesignOptions/WidgetDesignOptionsPage.css'
@@ -96,26 +96,49 @@ function NpsFields({ api }: { api: CsatSettingsApi }) {
   )
 }
 
-/** How often the same contact can be asked (PRD §7: 30, 60, 90 or 180 days, default 90). */
+/**
+ * How often the same contact can be asked (PRD §7: 30, 60, 90 or 180 days, default 90), or a custom number of days:
+ * picking Custom shows a number field, and 10 there means 10 days.
+ */
 function PeriodField({ api }: { api: CsatSettingsApi }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const days = api.settings.npsPeriod
+  const [custom, setCustom] = useState(!NPS_PERIODS.includes(days))
+  const [draft, setDraft] = useState(String(days))
+  const n = Number(draft)
+  const valid = /^\d+$/.test(draft.trim()) && n >= 1 && n <= NPS_PERIOD_MAX
   return (
-    <div className="wd-field">
+    <div className="wd-field cs-period">
       <div ref={ref} className="cs-select-wrap"><Input
-        label="Don’t ask the same contact again for" value={`${days} days`} readOnly
+        label="Don’t ask the same contact again for" value={custom ? 'Custom period' : `${days} days`} readOnly
         suffix={<Icon name={open ? 'chevrontop' : 'chevrondown'} size={16} />}
         aria-haspopup="listbox" aria-expanded={open} className="cs-select" onClick={() => setOpen((o) => !o)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); setOpen(true) } }}
       /></div>
       <Popover open={open} onClose={() => setOpen(false)} anchorRef={ref}>
         <Dropdown
-          variant="radio" value={String(days)}
-          options={NPS_PERIODS.map((d) => ({ value: String(d), label: `${d} days${d === 90 ? ' (recommended)' : ''}` }))}
-          onChange={(v: string | string[]) => { api.set('npsPeriod', Number(Array.isArray(v) ? v[0] : v) as NpsPeriod); setOpen(false) }}
+          variant="radio" value={custom ? 'custom' : String(days)}
+          options={[
+            ...NPS_PERIODS.map((d) => ({ value: String(d), label: `${d} days${d === 90 ? ' (recommended)' : ''}` })),
+            { value: 'custom', label: 'Custom period' },
+          ]}
+          onChange={(v: string | string[]) => {
+            const value = Array.isArray(v) ? v[0] : v
+            if (value === 'custom') { setCustom(true); setDraft(String(days)) } else { setCustom(false); api.set('npsPeriod', Number(value)) }
+            setOpen(false)
+          }}
         />
       </Popover>
+      {custom && (
+        <div className="cs-select-wrap cs-period-custom">
+          <Input
+            aria-label="Number of days" inputMode="numeric" value={draft} suffix="days" autoFocus
+            error={!valid} helperText={valid ? undefined : `Enter a whole number from 1 to ${NPS_PERIOD_MAX}`}
+            onChange={(e) => { const v = e.target.value.replace(/[^\d]/g, ''); setDraft(v); const k = Number(v); if (k >= 1 && k <= NPS_PERIOD_MAX) api.set('npsPeriod', k) }}
+          />
+        </div>
+      )}
     </div>
   )
 }

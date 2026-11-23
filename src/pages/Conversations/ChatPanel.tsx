@@ -3,8 +3,7 @@ import type { KeyboardEvent } from 'react'
 import { Avatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
 import { Icon } from '../../icons/Icon'
-import { Tag } from '../../components/Tag'
-import { GROUP_COLOR, GROUP_LABEL, npsGroup } from '../Nps/data'
+import { GROUP_LABEL, npsGroup } from '../Nps/data'
 import type { ChatConversation, ChatMessage } from './data'
 import { ME, addLiveMessage } from './liveChats'
 
@@ -35,21 +34,33 @@ function EmojiPicker({ onSelect }: { onSelect: (emoji: string) => void }) {
   )
 }
 
+/** Comments longer than this are cut to one line with "read more". */
+const COMMENT_PREVIEW = 60
+
+/** The visitor's NPS answer in the thread: the score, then the comment cut short with "read more" to expand it. */
+function NpsAnswer({ score, comment, time }: { score: number; comment?: string; time: string }) {
+  const [open, setOpen] = useState(false)
+  const group = npsGroup(score)
+  const long = !!comment && comment.length > COMMENT_PREVIEW
+  return (
+    <div className="chat-nps" role="note" aria-label={`NPS answer: ${score}, ${GROUP_LABEL[group]}`}>
+      <span className="chat-nps__line">
+        Visitor answered the NPS question: <span className={`chat-nps__score chat-nps__score--${group}`}>{score}/10 ({GROUP_LABEL[group]})</span>
+      </span>
+      {comment && (
+        <p className="chat-nps__comment">
+          <span className="chat-nps__label">Comment: </span>
+          {long && !open ? `${comment.slice(0, COMMENT_PREVIEW).trimEnd()}…` : comment}
+          {long && <button type="button" className="chat-nps__more" aria-expanded={open} onClick={() => setOpen((o) => !o)}>{open ? 'show less' : 'read more'}</button>}
+        </p>
+      )}
+      <span className="chat-nps__time">{time}</span>
+    </div>
+  )
+}
+
 function Message({ m }: { m: ChatMessage }) {
-  if (m.kind === 'nps') {
-    const group = npsGroup(m.score)
-    return (
-      <div className="chat-nps" role="note" aria-label={`NPS answer: ${m.score}, ${GROUP_LABEL[group]}`}>
-        <div className="chat-nps__head">
-          <Icon name="csat" size={14} />
-          <span>Visitor answered the NPS question</span>
-          <Tag color={GROUP_COLOR[group]}>NPS {m.score} · {GROUP_LABEL[group]}</Tag>
-        </div>
-        {m.comment && <p className="chat-nps__comment">“{m.comment}”</p>}
-        <span className="chat-message__meta">{m.time}</span>
-      </div>
-    )
-  }
+  if (m.kind === 'nps') return <NpsAnswer score={m.score} comment={m.comment} time={m.time} />
   if (m.kind === 'event') return <div className="chat-event">{m.text}</div>
   if (m.kind === 'incoming') {
     return (

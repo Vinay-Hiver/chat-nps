@@ -43,6 +43,14 @@
 .chat-emoji__item:hover { background: var(--slateSurfaceSubtle100Hover); }
 
 /* NPS answer in the conversation's activity (NPS spec §7) */
-.chat-nps { display: flex; flex-direction: column; align-items: center; gap: 6px; align-self: center; max-width: 480px; margin: 4px 0 12px; padding: 12px 16px; border: 1px solid var(--slateBorderLight); border-radius: 8px; background: var(--slateSurfaceWhite); text-align: center; }
-.chat-nps__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; font: var(--fontWeightRegular) 12px/18px var(--fontFamily); color: var(--slateTextSubtle); }
-.chat-nps__comment { margin: 0; font: var(--fontWeightRegular) 14px/20px var(--fontFamily); color: var(--slateTextBody); }
+.chat-nps { display: flex; flex-direction: column; align-items: center; gap: 2px; align-self: center; max-width: 480px; margin: 4px 0 12px; padding: 8px 14px; border: 1px solid var(--slateBorderLight); border-radius: 8px; background: var(--slateSurfaceWhite); text-align: center; }
+.chat-nps__line { display: inline-flex; align-items: baseline; justify-content: center; gap: 6px; max-width: 100%; font: var(--fontWeightRegular) 12px/18px var(--fontFamily); color: var(--slateTextSubtle); }
+.chat-nps__score { flex: none; font-weight: var(--fontWeightMedium); }
+.chat-nps__score--promoter { color: var(--successTextBody); }
+.chat-nps__score--passive { color: var(--warningTextBody); }
+.chat-nps__score--detractor { color: var(--errorTextBody); }
+.chat-nps__comment { margin: 0; font: var(--fontWeightRegular) 12px/18px var(--fontFamily); color: var(--slateTextBody); overflow-wrap: anywhere; }
+.chat-nps__label { color: var(--slateTextSubtle); }
+.chat-nps__more { margin-left: 4px; padding: 0; border: 0; background: none; font: var(--fontWeightMedium) 12px/18px var(--fontFamily); color: var(--primaryTextLabel); cursor: pointer; }
+.chat-nps__more:hover { text-decoration: underline; }
+.chat-nps__time { font: var(--fontWeightRegular) 11px/16px var(--fontFamily); color: var(--slateTextDisabled); }

@@ -85,3 +85,23 @@
 .nps-rp__acc { font-weight: var(--fontWeightRegular); }
 .nps-rp__toggle { flex-wrap: wrap; text-align: left; }
 .nps-rp__toggle .nps-rp__muted, .nps-rp__earlier .nps-rp__muted { white-space: nowrap; }
+
+/* One line: the account name shortens with "…", the NPS chip always shows in full */
+.nps-rp__line { display: flex; align-items: center; gap: 6px; min-width: 0; max-width: 100%; white-space: nowrap; }
+.nps-rp__line > * { flex: none; }
+.nps-rp__line > .nps-rp__accname { flex: 0 1 auto; }
+.nps-rp__accname { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* NPS in the right panel: coloured text, no chip background */
+.nps-rp__num { font: inherit; }
+.nps-rp__num--promoter { color: var(--successTextBody); }
+.nps-rp__num--passive { color: var(--warningTextBody); }
+.nps-rp__num--detractor { color: var(--errorTextBody); }
+/* Right-panel NPS rows use the panel's field font: 14px regular */
+.nps-rp__line, .nps-rp__line .nps-rp__muted, .nps-rp__stack, .nps-rp__stack .nps-link { font: var(--fontWeightRegular) 14px/20px var(--fontFamily); }
+.nps-rp__line .nps-rp__muted { color: var(--slateTextSubtle); }
+.nps-rp__stack { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; max-width: 100%; }
+.nps-rp__stack .nps-rp__accname { max-width: 100%; }
+.nps-rp__sub { color: var(--slateTextSubtle); white-space: nowrap; }
+/* The two-line Account row: its label sits at the top, level with the account name */
+.hot-rp-field:has(.nps-rp__stack) { align-items: flex-start; }
+.hot-rp-field:has(.nps-rp__stack) .hot-rp-field__label { padding-top: 8px; }

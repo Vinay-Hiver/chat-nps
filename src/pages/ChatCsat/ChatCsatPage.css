@@ -73,6 +73,8 @@
 /* The ask-period field is a read-only input that opens a menu. */
 .cs-select { cursor: pointer; caret-color: transparent; }
 .cs-select-wrap { align-self: flex-start; }
+/* Ask period: the dropdown and the custom days field are as wide as the options list (260px), 8px apart */
+.cs-period .hot-field { width: 260px; }
 
 /* After Submit: the card keeps its size; tick and thank-you centred, Start Conversation at the bottom */
 .cs-done { box-sizing: border-box; }

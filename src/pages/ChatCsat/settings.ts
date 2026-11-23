@@ -4,8 +4,10 @@ import { useState } from 'react'
 export type SurveyType = 'rating' | 'nps'
 export type AnswerOrder = 'good-first' | 'bad-first'
 /** Days before the same contact can be asked the NPS question again. */
-export type NpsPeriod = 30 | 60 | 90 | 180
+/** The preset ask periods in days; any whole number from 1 to 365 can also be entered as a custom period. */
+export type NpsPeriod = number
 export const NPS_PERIODS: NpsPeriod[] = [30, 60, 90, 180]
+export const NPS_PERIOD_MAX = 365
 
 export type CsatSettings = {
   /** Ask a question when the chat ends. */

@@ -4,7 +4,7 @@ import { Icon } from '../../icons/Icon'
 import { ChannelRightPanel } from '../../patterns/RightPanel/ChannelRightPanel'
 import { ChatPanel } from '../Conversations/ChatPanel'
 import { CHAT_INBOX, chatConversations } from '../Conversations/data'
-import { NpsContactRows, contactValues } from '../Nps/NpsContactSection'
+import { NpsAccountRows, NpsContactRows, contactValues } from '../Nps/NpsContactSection'
 import '../Conversations/ConversationsPage.css'
 
 /**
@@ -41,8 +41,11 @@ export function ConversationModal({ conversationId, onOpenConversation, onOpenAc
             <ChannelRightPanel
               channel="chat" inboxName={CHAT_INBOX.name} unassigned={conversation.view !== 'mine'} conversationId={conversation.id}
               status={conversation.closed ? 'closed' : undefined}
-              values={contactValues(conversation.contactId)} expandedSections={['contact']}
-              sectionExtras={{ contact: <NpsContactRows key={conversation.id} contactId={conversation.contactId} onOpenConversation={onOpenConversation} onOpenAccount={onOpenAccount} /> }}
+              values={contactValues(conversation.contactId)} expandedSections={['contact', 'account']}
+              sectionExtras={{
+            contact: <NpsContactRows key={conversation.id} contactId={conversation.contactId} onOpenConversation={onOpenConversation} onOpenAccount={onOpenAccount} />,
+            account: <NpsAccountRows key={conversation.id} contactId={conversation.contactId} onOpenAccount={onOpenAccount} />,
+          }}
             />
           </div>
         </div>
