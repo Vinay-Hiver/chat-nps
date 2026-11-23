@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactElement } from 'react'
+import type { CSSProperties, ReactElement, ReactNode } from 'react'
 import { Avatar } from '../../components/Avatar'
 import { Button } from '../../components/Button'
 import { Tooltip } from '../../components/Tooltip'
@@ -13,7 +13,8 @@ import { customFieldKinds, getChannel, samples } from './data'
 import type { ChannelId, ChannelSample, FieldDef, FieldKind, ResolvedSection } from './data'
 
 /** A row: [icon] [label] ...space... [value]. Same markup as the storybook right panel (see sampleData.tsx). */
-function Row({ icon, label, children, link }: { icon: IconName; label: string; children?: React.ReactNode; link?: boolean }) {
+/** A label and value row, as in the panel's own sections. Exported so pages can add rows to a section (`sectionExtras`). */
+export function Row({ icon, label, children, link }: { icon: IconName; label: string; children?: React.ReactNode; link?: boolean }) {
   return (
     <div className="hot-rp-field">
       <div className="hot-rp-field__label"><Icon name={icon} size={14} /><span>{label}</span></div>
@@ -191,10 +192,16 @@ const HIDDEN_SECTIONS = ['conversation', 'customFields']
 const TICKET_SECTIONS = ['activity', 'customFields']
 
 /** The storybook right panel for one channel: its tab, top section, sub-sections in order and "Customize widgets". */
-export function ChannelRightPanel({ channel, inboxName, unassigned, conversationId, ticketId, assignee, onAssigneeChange, status, onStatusChange, onLinkClick, linkedConversations = [], onViewAll, onUnlink, onOpenConversation, leadSections = [] }: {
+export function ChannelRightPanel({ channel, inboxName, unassigned, conversationId, ticketId, assignee, onAssigneeChange, status, onStatusChange, onLinkClick, linkedConversations = [], onViewAll, onUnlink, onOpenConversation, leadSections = [], sectionExtras = {}, expandedSections = [], values }: {
   channel: ChannelId
   /** RightPanelSection elements shown first, before the channel's own sections (for example NPS). */
   leadSections?: ReactElement[]
+  /** Extra content at the end of a section, by section id (for example NPS rows in `contact`). */
+  sectionExtras?: Partial<Record<string, ReactNode>>
+  /** Section ids that start open. */
+  expandedSections?: string[]
+  /** Field values for this conversation, over the channel's sample values (for example the contact's name and email). */
+  values?: Record<string, string>
   /** Email only: the conversation is a ticket with this ID, so the panel uses the ticket layout. */
   ticketId?: string
   /** The conversation's assignee (`none` when unassigned), when the caller keeps it. Leave out to let the field manage itself. */
@@ -220,7 +227,7 @@ export function ChannelRightPanel({ channel, inboxName, unassigned, conversation
   onOpenConversation?: (id: string) => void
 }) {
   const def = getChannel(channel)
-  const sample = samples[channel]
+  const sample = values ? { ...samples[channel], values: { ...samples[channel].values, ...values } } : samples[channel]
   const isTicket = channel === 'email' && !!ticketId
   // Linked conversations sits after the field sections, before lists, notes and activity (the omni-boilerplate order).
   // A ticket shows Linked conversations first, then Activity & Notes, then Custom fields.
@@ -253,8 +260,9 @@ export function ChannelRightPanel({ channel, inboxName, unassigned, conversation
       {leadSections}
       {sections.map((s) => s === 'linked' ? linkedConversationsSection(linkedConversations, onLinkClick, onViewAll, onUnlink, onOpenConversation) : (
         // Every section starts closed; only Linked conversations starts open.
-        <RightPanelSection key={s.id} id={s.id} title={s.title} icon={s.icon} defaultExpanded={false}>
+        <RightPanelSection key={s.id} id={s.id} title={s.title} icon={s.icon} defaultExpanded={expandedSections.includes(s.id)}>
           <SectionRows section={s} sample={sample} />
+          {sectionExtras[s.id]}
         </RightPanelSection>
       ))}
     </RightPanel>

@@ -64,7 +64,7 @@
 .cs-closed { gap: 20px; font: var(--fontWeightMedium) 14px/20px var(--fontFamily); color: var(--slateTextDisabled); }
 .cs-comment--tall { height: 100px; padding: 10px 8px; border: 1.5px solid var(--slateBorderLight); border-radius: 6px; }
 .cs-comment--tall::placeholder { color: var(--slateTextDisabled); }
-.cs-submit--full { align-self: stretch; height: 28px; padding: 0 20px; border-radius: 6px; background: var(--widget-color); color: var(--slateSurfaceWhite); }
+.cs-submit--full { align-self: stretch; height: 32px; padding: 0 20px; border-radius: 6px; background: var(--widget-color); color: var(--slateSurfaceWhite); }
 .cs-submit--full:disabled { background: var(--slateSurfaceDisabled); color: var(--slateTextDisabled); cursor: not-allowed; }
 .cs-launcher { width: 48px; min-width: 48px; height: 48px; padding: 0; }
 /* Widget sits in the middle of the grey preview area. */
@@ -73,3 +73,8 @@
 /* The ask-period field is a read-only input that opens a menu. */
 .cs-select { cursor: pointer; caret-color: transparent; }
 .cs-select-wrap { align-self: flex-start; }
+
+/* After Submit: the card keeps its size; tick and thank-you centred, Start Conversation at the bottom */
+.cs-done { box-sizing: border-box; }
+.cs-done__body { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+.cs-done__tick { width: 64px; height: 64px; }

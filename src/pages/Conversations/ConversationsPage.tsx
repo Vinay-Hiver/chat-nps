@@ -13,7 +13,7 @@ import { CHAT_INBOX, chatConversations } from './data'
 import type { ChatConversation, ChatMessage } from './data'
 import { ME, updateLiveChat, useLiveChats } from './liveChats'
 import type { LiveChat } from './liveChats'
-import { npsContactSection } from '../Nps/NpsContactSection'
+import { NpsContactRows, contactValues } from '../Nps/NpsContactSection'
 import type { Navigate } from '../Nps/nav'
 import './ConversationsPage.css'
 
@@ -112,7 +112,8 @@ export function ConversationsPage({ onNavigate, initialConversationId }: Convers
         <ChannelRightPanel channel="chat" inboxName={CHAT_INBOX.name} unassigned={conversation.view !== 'mine'} conversationId={conversation.id}
           assignee={conversation.live ? conversation.assignee : undefined} onAssigneeChange={conversation.live ? assignLive : undefined}
           status={conversation.live ? (conversation.closed ? 'closed' : 'open') : conversation.closed ? 'closed' : undefined} onStatusChange={conversation.live ? setLiveStatus : undefined}
-          leadSections={npsContactSection(conversation.contactId, openConversation, (accountId) => onNavigate?.('customers', { accountId }))}
+          values={contactValues(conversation.contactId)} expandedSections={['contact']}
+          sectionExtras={{ contact: <NpsContactRows key={conversation.id} contactId={conversation.contactId} onOpenConversation={openConversation} onOpenAccount={(accountId) => onNavigate?.('customers', { accountId })} /> }}
         />
       ) : undefined}
     >
