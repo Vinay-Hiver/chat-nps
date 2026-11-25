@@ -43,11 +43,6 @@ export function ChatCsatPage() {
                   <h2 className="cs-title" id="cs-details-title">Survey details</h2>
                   {isNps ? <NpsFields api={api} /> : <RatingFields api={api} />}
                 </section>
-                {api.saved.type !== s.type && (
-                  <div className="wd-note"><Icon name="info" size={14} />
-                    <span>Applies to chats that end after you save.</span>
-                  </div>
-                )}
               </>
             ) : (
               <p className="wd-hint wd-hint--body">The survey is off. Visitors aren’t asked anything when a chat ends.</p>
@@ -110,10 +105,11 @@ function PeriodField({ api }: { api: CsatSettingsApi }) {
   const valid = /^\d+$/.test(draft.trim()) && n >= 1 && n <= NPS_PERIOD_MAX
   return (
     <div className="wd-field cs-period">
-      <div ref={ref} className="cs-select-wrap"><Input
+      {/* The whole field opens the list, not just the text: the chevron and padding sit outside the input. */}
+      <div ref={ref} className="cs-select-wrap cs-select-wrap--click" onClick={(e) => { if ((e.target as HTMLElement).closest('.hot-field__box')) setOpen((o) => !o) }}><Input
         label="Don’t ask the same contact again for" value={custom ? 'Custom period' : `${days} days`} readOnly
         suffix={<Icon name={open ? 'chevrontop' : 'chevrondown'} size={16} />}
-        aria-haspopup="listbox" aria-expanded={open} className="cs-select" onClick={() => setOpen((o) => !o)}
+        aria-haspopup="listbox" aria-expanded={open} className="cs-select"
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); setOpen(true) } }}
       /></div>
       <Popover open={open} onClose={() => setOpen(false)} anchorRef={ref}>

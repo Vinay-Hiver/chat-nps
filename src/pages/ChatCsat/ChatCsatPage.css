@@ -80,3 +80,5 @@
 .cs-done { box-sizing: border-box; }
 .cs-done__body { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; }
 .cs-done__tick { width: 64px; height: 64px; }
+
+.cs-select-wrap--click .hot-field__box, .cs-select-wrap--click .hot-field__control { cursor: pointer; caret-color: transparent; user-select: none; }
