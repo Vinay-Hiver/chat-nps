@@ -191,3 +191,8 @@
 .ap-fb__meta { display: flex; flex-direction: column; gap: 4px; font: var(--fontWeightRegular) 13px/18px var(--fontFamily); color: var(--slateTextTitle); }
 .ap-fb__metalabel { color: var(--slateTextSubtle); }
 @media (max-width: 1200px) { .ap-fb__tabs { margin: 0 -24px; padding: 0 24px; overflow-x: auto; } .ap-fb__tab { min-width: 180px; } }
+
+/* Contacts "Show:" group filter: a narrow checkbox menu centred under its button */
+.ap-groupfilter { display: inline-flex; align-items: center; gap: 8px; }
+.ap-groupfilter__label { font: var(--fontWeightRegular) 14px/20px var(--fontFamily); color: var(--slateTextSubtle); }
+.ap-groupmenu .hot-dropdown { width: 160px; }

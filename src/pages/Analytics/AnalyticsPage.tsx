@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Button } from '../../components/Button'
-import { Checkbox } from '../../components/Checkbox'
 import { Dropdown } from '../../components/Dropdown'
 import { Input } from '../../components/Input'
 import { Popover } from '../../components/Popover'
@@ -99,6 +98,42 @@ function Select({ icon, value, options, onChange, label, full, text }: { icon: I
 }
 
 type Tone = 'all' | 'promoter' | 'passive' | 'detractor'
+type Group = Exclude<Tone, 'all'>
+const GROUPS: { value: Group; label: string }[] = [{ value: 'promoter', label: 'Promoters' }, { value: 'passive', label: 'Passives' }, { value: 'detractor', label: 'Detractors' }]
+
+const GROUP_MENU_WIDTH = 160
+
+/** Filters the Contacts table by group: a checkbox list; the button reads "All" when every group is ticked. */
+function GroupFilter({ value, onChange }: { value: Group[]; onChange: (v: Group[]) => void }) {
+  const ref = useRef<HTMLSpanElement>(null)
+  const anchorRef = useRef<HTMLSpanElement>(null)
+  // Where the button was when the menu opened. The button's text (and width) changes as boxes are ticked, so the menu
+  // anchors to this frozen spot instead and stays put while it's open.
+  const [at, setAt] = useState<DOMRect | null>(null)
+  const text = value.length === GROUPS.length ? 'All' : value.length === 0 ? 'None' : GROUPS.filter((g) => value.includes(g.value)).map((g) => g.label).join(', ')
+  // Clicking the button while open counts as an outside click for the popover (it anchors to the frozen spot), so a
+  // close that just happened shouldn't be undone by the same click reopening it.
+  const closedAt = useRef(0)
+  const close = () => { closedAt.current = Date.now(); setAt(null) }
+  const toggle = () => { if (Date.now() - closedAt.current < 300) return; setAt((cur) => (cur ? null : ref.current?.getBoundingClientRect() ?? null)) }
+  return (
+    <span className="ap-groupfilter">
+      <span className="ap-groupfilter__label" id="ap-groupfilter-label">Show:</span>
+      <span ref={ref} className="ap-select">
+        <Button variant="secondary" size="sm" aria-haspopup="listbox" aria-expanded={!!at} aria-labelledby="ap-groupfilter-label ap-groupfilter-value"
+          iconRight={<Icon name={at ? 'chevrontop' : 'chevrondown'} size={16} />} onClick={toggle}
+        ><span id="ap-groupfilter-value">{text}</span></Button>
+      </span>
+      {at && <span ref={anchorRef} aria-hidden="true" style={{ position: 'fixed', left: at.left, top: at.top, width: at.width, height: at.height, pointerEvents: 'none' }} />}
+      <Popover open={!!at} onClose={close} anchorRef={anchorRef} placement="bottom-start">
+        {/* Centred under the button: shift by half the width difference. */}
+        <div className="ap-groupmenu" style={{ marginLeft: at ? (at.width - GROUP_MENU_WIDTH) / 2 : 0 }}>
+          <Dropdown variant="checkbox" value={value} options={GROUPS} onChange={(v) => onChange((Array.isArray(v) ? v : [v]) as Group[])} />
+        </div>
+      </Popover>
+    </span>
+  )
+}
 
 function SummaryCard({ tone, face, title, value, delta, link, onOpen }: { tone: Tone; face: string; title: string; value: string; delta: number | null; link: string; onOpen: () => void }) {
   return (
@@ -364,7 +399,7 @@ function NpsReport({ inbox, onOpenConversation, onOpenAccount }: { inbox: string
   const [accSort, setAccSort] = useState<{ key: 'responded' | 'nps'; dir: 'asc' | 'desc' }>({ key: 'responded', dir: 'desc' })
   const [conQuery, setConQuery] = useState('')
   const [conPage, setConPage] = useState(0)
-  const [detractorsOnly, setDetractorsOnly] = useState(false)
+  const [groups, setGroups] = useState<Group[]>(['promoter', 'passive', 'detractor'])
   const [detail, setDetail] = useState<Tone | null>(null)
   const [modal, setModal] = useState<string | null>(null)
 
@@ -415,7 +450,7 @@ function NpsReport({ inbox, onOpenConversation, onOpenAccount }: { inbox: string
   // Contacts table
   const q = conQuery.trim().toLowerCase()
   const contactRows = latestByContact(p, inbox)
-    .filter((r) => !detractorsOnly || npsGroup(r.score) === 'detractor')
+    .filter((r) => groups.includes(npsGroup(r.score)))
     .filter((r) => !q || (contactById(r.contactId)?.name ?? '').toLowerCase().includes(q) || (accountById(contactById(r.contactId)?.accountId)?.name ?? 'no account').toLowerCase().includes(q))
   const contactColumns: TableColumn<NpsResponse>[] = [
     { key: 'name', header: 'Contact', render: (r) => <button type="button" className="ap-link" onClick={(e) => { e.stopPropagation(); onOpenConversation(conversationIdFor(r)) }}>{contactById(r.contactId)?.name}</button> },
@@ -478,7 +513,7 @@ function NpsReport({ inbox, onOpenConversation, onOpenAccount }: { inbox: string
             <span className="ap-search"><Input search size="sm" placeholder="Search" aria-label="Search contacts" value={conQuery} onChange={(e) => { setConQuery(e.target.value); setConPage(0) }} /></span>
           </div>
           <div className="ap-section__right">
-            <Checkbox label="Detractors only" checked={detractorsOnly} onChange={(e) => { setDetractorsOnly(e.target.checked); setConPage(0) }} />
+            <GroupFilter value={groups} onChange={(v) => { setGroups(v); setConPage(0) }} />
             <Pager page={conPage} total={contactRows.length} onPage={setConPage} />
           </div>
         </div>
